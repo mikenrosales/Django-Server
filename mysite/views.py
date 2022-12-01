@@ -11,7 +11,7 @@ from datetime import *
 from abc import ABC, abstractmethod
 
 #notification feature
-from notifications.signals import notify
+# from notifications.signals import notify
 
 
 
@@ -27,7 +27,7 @@ from microsoft_authentication.auth.auth_utils import (
 	get_django_user,
 	get_logout_url,
 )
-from Plan_It_Teknoy import graph
+from mysite import graph
 import configparser
 from .graph import Graph
 from microsoft_authentication.auth.auth_decorators import microsoft_login_required
@@ -73,8 +73,8 @@ def logout(request):
 	try:
 		del request.session['user']
 	except:
-		return redirect('Plan_It_Teknoy:Home')
-	return redirect('Plan_It_Teknoy:Home')
+		return redirect('mysite:Home')
+	return redirect('mysite:Home')
 
 # Home and Landing Page
 def home(response):
@@ -150,7 +150,7 @@ class IndexView(View):
 				id_number = request.POST.get('student_id')
 
 				if Students.objects.filter(StudentID=id_number).count()>0 or Users.objects.filter(id_number=id_number).count()>0:
-					return redirect('Plan_It_Teknoy:calendar_view') 
+					return redirect('mysite:calendar_view') 
 
 				else:
 					add_user.id_number = request.POST.get('student_id')
@@ -185,7 +185,7 @@ class IndexView(View):
 					add_student.save()
 
 					print('Successfully Added an applicant')
-					return redirect('Plan_It_Teknoy:dashboard_view') 
+					return redirect('mysite:dashboard_view') 
 		
 	
 
@@ -318,7 +318,7 @@ class DocGenView(View):
 		completed_events = Event.objects.get_completed_events(StudentID=current_student.StudentID)
 		
 		# accessing all student records in the database
-		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM plan_it_teknoy_students WHERE StudentID_id = %s', [current_student.StudentID])
+		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM mysite_students WHERE StudentID_id = %s', [current_student.StudentID])
 		
 		#document table
 		docs = DocumentGen.objects.all()
@@ -357,12 +357,12 @@ class DocGenView(View):
 				add_doc.content = content
 				add_doc.save()       
 
-				return redirect('Plan_It_Teknoy:docgen_view')
+				return redirect('mysite:docgen_view')
 			if 'btnViewDocument' in request.POST:
 				getfile = request.POST.get('docview')
 				# temporary file browsing / please replace to local drive when using
 				webbrowser.open_new_tab(f'A:/GitHub/M3DA1-Plant-it-Teknoy/team_m3da1_project/{getfile}')
-				return redirect('Plan_It_Teknoy:docgen_view')
+				return redirect('mysite:docgen_view')
 
 			if 'btnDeleteDocument' in request.POST:
 				getfile = request.POST.get('docdeletepdf')
@@ -372,7 +372,7 @@ class DocGenView(View):
 				# local drive, please change appropriately
 				os.remove(f'A:/GitHub/M3DA1-Plant-it-Teknoy/team_m3da1_project/{getfile}')
 				os.remove(f'A:/GitHub/M3DA1-Plant-it-Teknoy/team_m3da1_project/{getfile2}')
-				return redirect('Plan_It_Teknoy:docgen_view')
+				return redirect('mysite:docgen_view')
 
 
 
@@ -407,11 +407,11 @@ class contactView(View):
 			message = request.POST.get('message')
 			form = Contact(name = name, email = email, message = message)         
 			form.save()
-			return redirect('Plan_It_Teknoy:contact_view')
+			return redirect('mysite:contact_view')
 		else:
 			print(form.errors)
 			messages.info(request, 'Please complete the fields', extra_tags='try')
-			return redirect('Plan_It_Teknoy:contact_view')
+			return redirect('mysite:contact_view')
 
 # Sign in page
 class SignInView(View):
@@ -447,11 +447,11 @@ class SignInView(View):
 				if check_id and dec_password and check_email:
 					request.session['user'] = id_number
 					if Users.objects.filter(id_number=id_number).count()>0:
-						return redirect('Plan_It_Teknoy:dashboard_view')
+						return redirect('mysite:dashboard_view')
 				else:
 					# does not display
 					messages.info(request, 'Incorrect ID Number and Email and Password!')
-					return redirect('Plan_It_Teknoy:signin_view') 
+					return redirect('mysite:signin_view') 
 
 			elif 'btnForgotPass' in request.POST:
 				email = request.POST.get("email")
@@ -460,10 +460,10 @@ class SignInView(View):
 					request.session['email'] = email
 					send_forget_password_mail(email)
 					# add text that says email sent
-					return redirect('Plan_It_Teknoy:signin_view')
+					return redirect('mysite:signin_view')
 
 				# add else if email not in db
-				return redirect('Plan_It_Teknoy:contact_view')
+				return redirect('mysite:contact_view')
 
 class ForgotPasswordView(View):
 	def get(self, request):
@@ -477,8 +477,8 @@ class ForgotPasswordView(View):
 				
 				request.session['email'] = email
 				send_forget_password_mail(email)
-				return redirect('Plan_It_Teknoy:Home')
-			return redirect('Plan_It_Teknoy:contact_view')
+				return redirect('mysite:Home')
+			return redirect('mysite:contact_view')
 
 class ChangePasswordSentView(View):
 	def get(self, request, *args, **kwargs):
@@ -499,10 +499,10 @@ class ChangePasswordSentView(View):
 			if(cpassword == password):
 				u.password = enc_password
 				u.save()
-				return redirect('Plan_It_Teknoy:signin_view')
+				return redirect('mysite:signin_view')
 
 		else:
-			return redirect('Plan_It_Teknoy:signupS_view')
+			return redirect('mysite:signupS_view')
 
 # Student Sign Up
 class SignUpStudentView(View):
@@ -548,7 +548,7 @@ class SignUpStudentView(View):
 			if(confirmpassword == password):
 				if Students.objects.filter(StudentID=id_number).count()>0 or Users.objects.filter(id_number=id_number).count()>0:
 					messages.info(request, 'ID Number already exists!')
-					return redirect('Plan_It_Teknoy:signupS_view') 
+					return redirect('mysite:signupS_view') 
 				else:              
 					form2 = Users(id_number = id_number, password = enc_password, email = email)
 					form2.save()
@@ -561,14 +561,14 @@ class SignUpStudentView(View):
 					check_user = Users.objects.filter(id_number=id_number, password=enc_password, email = email)
 					if check_user:
 						request.session['user'] = id_number
-						return redirect('Plan_It_Teknoy:signin_view')
+						return redirect('mysite:signin_view')
 			else:
 				messages.info(request, 'Passwords do not match!', extra_tags='signin')
-				return redirect('Plan_It_Teknoy:signupS_view')
+				return redirect('mysite:signupS_view')
 		else:
 			print(form1.errors,form2.errors)
 			messages.info(request, 'Account already exists! Please try another unique one.', extra_tags='try')
-			return redirect('Plan_It_Teknoy:signupS_view')
+			return redirect('mysite:signupS_view')
 
 # Teacher Sign Up
 class SignUpTeacherView(View):
@@ -613,7 +613,7 @@ class SignUpTeacherView(View):
 			if(confirmpassword == password):
 				if Teachers.objects.filter(TeacherID=id_number).count()>0 or Users.objects.filter(id_number=id_number).count()>0:
 					messages.info(request, 'ID Number already exists!')
-					return redirect('Plan_It_Teknoy:signupT_view') 
+					return redirect('mysite:signupT_view') 
 				else:
 					form2 = Users(id_number = id_number, password = enc_password, email = email)
 					form2.save()
@@ -626,14 +626,14 @@ class SignUpTeacherView(View):
 					check_user = Users.objects.filter(id_number=id_number, password=enc_password, email = email)
 					if check_user:
 						request.session['user'] = id_number
-						return redirect('Plan_It_Teknoy:signin_view')
+						return redirect('mysite:signin_view')
 			else:
 				messages.info(request, 'Passwords do not match!', extra_tags='signin')
-				return redirect('Plan_It_Teknoy:signupT_view')
+				return redirect('mysite:signupT_view')
 		else:
 			print(form1.errors,form2.errors)
 			messages.info(request, 'Account already exists! Please try another unique one.', extra_tags='try')
-			return redirect('Plan_It_Teknoy:signupT_view')
+			return redirect('mysite:signupT_view')
 
 
 """ Strategy Design Pattern for Notifications Feature"""
@@ -739,7 +739,7 @@ class CalendarViewNew(View):
 
 
 		#accessing all student records in the database
-		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level, profile_pic FROM plan_it_teknoy_students WHERE StudentID_id = %s', [current_student.StudentID])
+		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level, profile_pic FROM mysite_students WHERE StudentID_id = %s', [current_student.StudentID])
 		
 		student_running_events = []
 
@@ -777,12 +777,12 @@ class CalendarViewNew(View):
 			end_time = form2.cleaned_data["end_time"]
 			form2 = Event(StudentID = current_student.StudentID, title = title, description = description, start_time = start_time, end_time = end_time)		
 			form2.save()
-			return redirect('Plan_It_Teknoy:calendar_view')
+			return redirect('mysite:calendar_view')
 				
 		else:
 			print(form2.errors)
 			messages.info(request, 'Form error.', extra_tags='try')
-			return redirect('Plan_It_Teknoy:calendar_view')
+			return redirect('mysite:calendar_view')
 
 # DashboardView
 class DashboardView(View):
@@ -805,7 +805,7 @@ class DashboardView(View):
 		completed_events = Event.objects.get_completed_events(StudentID=current_student.StudentID)
 		
 		# accessing all student records in the database
-		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM plan_it_teknoy_students WHERE StudentID_id = %s', [current_student.StudentID])
+		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM mysite_students WHERE StudentID_id = %s', [current_student.StudentID])
 		
 		context = {
 					"current_user": current_user,
@@ -834,7 +834,7 @@ class DashboardView(View):
 				deleventID = request.POST.get("deleventID")
 				Event.objects.filter(EventID = deleventID).delete()
 
-		return redirect('Plan_It_Teknoy:dashboard_view')
+		return redirect('mysite:dashboard_view')
 	
 class AllEventsListView(ListView):
 
@@ -854,7 +854,7 @@ class AllEventsListView(ListView):
 
 
 
-		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM plan_it_teknoy_students WHERE StudentID_id = %s', [current_student.StudentID])
+		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM mysite_students WHERE StudentID_id = %s', [current_student.StudentID])
 
 		context = {
 			"student_record" : student_record, 
@@ -903,7 +903,7 @@ class RunningEventsListView(ListView):
 		# 		notify.send(sender,recipient=receiver,verb='Event Running',description=message, timestamp = dt_string)
 		# 		i += 1
 		
-		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM plan_it_teknoy_students WHERE StudentID_id = %s', [current_student.StudentID])
+		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM mysite_students WHERE StudentID_id = %s', [current_student.StudentID])
 		
 		context = {
 			"student_record" : student_record, 
@@ -930,7 +930,7 @@ class CompletedEventsListView(ListView):
 		check_teacher = Teachers.objects.filter(TeacherID=current_user)
 		check_student = Students.objects.filter(StudentID=current_user)
 
-		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM plan_it_teknoy_students WHERE StudentID_id = %s', [current_student.StudentID])
+		student_record = Students.objects.raw('SELECT StudentID_id, first_name, program, last_name, year_level FROM mysite_students WHERE StudentID_id = %s', [current_student.StudentID])
 		
 		context = {
 			"student_record" : student_record, 
@@ -992,7 +992,7 @@ class SProfileSettings(View):
 				saveProPic.save()
 				messages.success(request, "Profile Picture Successfully Updated!!!", extra_tags='profile_pic_success')
 				print('Student profile picture updated!')
-				return redirect('Plan_It_Teknoy:sprofile-settings_view')   
+				return redirect('mysite:sprofile-settings_view')   
 			
 
 			# personal details update feature
@@ -1029,7 +1029,7 @@ class SProfileSettings(View):
 				Users.objects.filter(id_number=student_id).delete()
 				Event.objects.filter(StudentID = student_id).delete()
 				print("Student account deleted")
-				return redirect('Plan_It_Teknoy:Logout')
+				return redirect('mysite:Logout')
 						
 			
 			if 'btnSubmitPassword' in request.POST:
@@ -1057,7 +1057,7 @@ class SProfileSettings(View):
 						Users.objects.filter(id_number = student_id).update(password = enc_user_new_pwd)
 						print("Password newly created")
 						messages.success(request, "Account Password Successfully Updated!!!", extra_tags='pass_success')
-						return redirect('Plan_It_Teknoy:sprofile-settings_view')
+						return redirect('mysite:sprofile-settings_view')
 					
 					else:
 						messages.error(request, 'New password and Confirm password did not matched!', extra_tags='old_new_pass_error')
@@ -1066,7 +1066,7 @@ class SProfileSettings(View):
 				else:
 					messages.error(request, 'You did not input your correct current password!', extra_tags='current_pass_error')
 
-			return redirect('Plan_It_Teknoy:sprofile-settings_view')
+			return redirect('mysite:sprofile-settings_view')
 
 
 class TProfileSettings(View):
@@ -1093,7 +1093,7 @@ class TProfileSettings(View):
 				saveProPic.save()
 				messages.success(request, "Profile Picture Successfully Updated!!!", extra_tags='profile_pic_success')
 				print('Teacher profile picture updated!')
-				return redirect('Plan_It_Teknoy:tprofile-settings_view')   
+				return redirect('mysite:tprofile-settings_view')   
 			
 
 			# personal details update feature
@@ -1131,7 +1131,7 @@ class TProfileSettings(View):
 					Users.objects.filter(id_number=current_teacher).delete()
 					Event.objects.filter(TeacherID = current_teacher).delete()
 				print("Teacher account deleted")
-				return redirect('Plan_It_Teknoy:Logout')
+				return redirect('mysite:Logout')
 						
 			
 			if 'btnSubmitPassword' in request.POST:
@@ -1159,7 +1159,7 @@ class TProfileSettings(View):
 						Users.objects.filter(id_number = teacher_id).update(password = enc_user_new_pwd)
 						print("Password newly created")
 						messages.success(request, "Account Password Successfully Updated!!!", extra_tags='pass_success')
-						return redirect('Plan_It_Teknoy:tprofile-settings_view')
+						return redirect('mysite:tprofile-settings_view')
 					
 					else:
 						messages.error(request, 'New password and Confirm password did not matched!', extra_tags='old_new_pass_error')
@@ -1168,7 +1168,7 @@ class TProfileSettings(View):
 				else:
 					messages.error(request, 'You did not input your correct current password!', extra_tags='current_pass_error')
 
-			return redirect('Plan_It_Teknoy:tprofile-settings_view')
+			return redirect('mysite:tprofile-settings_view')
 
 
 
