@@ -6,7 +6,7 @@ from django.views.generic import View
 from django.http import HttpResponse, HttpResponseRedirect
 # from .forms import *
 # from .models import *
-from passlib.hash import pbkdf2_sha256
+# from passlib.hash import pbkdf2_sha256
 from django.core.mail import send_mail
 from django.conf import settings
 from datetime import *
