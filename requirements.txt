@@ -24,7 +24,6 @@ gunicorn==20.1.0
 # azure-core==1.26.0
 # azure-identity==1.11.0
 
-# 
 appdirs==1.4.4
 argon2-cffi==21.3.0
 argon2-cffi-bindings==21.2.0
