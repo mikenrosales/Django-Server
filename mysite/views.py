@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.views.generic import View
 from django.http import HttpResponse, HttpResponseRedirect
-from passlib.hash import pbkdf2_sha256
+# from passlib.hash import pbkdf2_sha256
 from django.core.mail import send_mail
 from django.conf import settings
 from datetime import *
