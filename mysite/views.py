@@ -13,7 +13,7 @@ from datetime import *
 from abc import ABC, abstractmethod
 
 #notification feature
-from notifications.signals import notify
+# from notifications.signals import notify
 
 
 
