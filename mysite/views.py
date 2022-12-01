@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 import uuid
 import re
 # added imports below for microsoft authentication
-import msal
+# import msal
 from django.contrib.auth import login, logout
 from microsoft_authentication.auth.auth_utils import (
 	get_sign_in_flow,
